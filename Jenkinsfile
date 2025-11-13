@@ -1,6 +1,7 @@
 
 pipeline {
     agent any
+    
     environment {
         INVENTORY = 'ansible/inventory.ini'
         PLAYBOOK = 'ansible/setup_apps.yml'
@@ -24,9 +25,19 @@ pipeline {
     post {
         success {
             echo '✅ All apps installed and started successfully!'
+            emailext (
+                subject: "✅ Jenkins Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Good news!\n\nThe Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' was successful.\nCheck console output: ${env.BUILD_URL}",
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+            )
         }
         failure {
             echo '❌ Deployment failed!'
-        }
+            emailext (
+                subject: "❌ Jenkins Build FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Attention!\n\nThe Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' has failed.\nCheck console output: ${env.BUILD_URL}",   
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']]               
+            )
+        } 
     }
-}
+}   

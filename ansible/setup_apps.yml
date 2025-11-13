@@ -11,24 +11,34 @@
     - name: Update apt cache
       apt:
         update_cache: yes
+      tags: always
+
+
+
+#-------------------docker installation---------------------#
 
     - name: Install Docker
       apt:
         name: docker.io
         state: present
+      tags: docker
 
     - name: Enable and start Docker service
       systemd:
         name: docker
         enabled: yes
         state: started
+      tags: docker
 
+
+#-------------------mysql installation---------------------#
     - name: Preconfigure MySQL root password
       debconf:
         name: 'mysql-server'
         question: 'mysql-server/root_password'
         value: "{{ mysql_root_password }}"
         vtype: 'password'
+      tags: mysql
 
     - name: Preconfigure MySQL root password again (confirm)
       debconf:
@@ -36,35 +46,44 @@
         question: 'mysql-server/root_password_again'
         value: "{{ mysql_root_password }}"
         vtype: 'password'
+      tags: mysql
 
     - name: Install MySQL server
       apt:
         name: mysql-server
         state: present
+      tags: mysql
 
     - name: enabled and start MySQL service
       systemd:
         name: mysql
         enabled: yes
         state: started
+      tags: mysql
+
+
+#-------------------mongodb installation---------------------#
 
     - name: Add MongoDB GPG key securely
       ansible.builtin.shell: |
        curl -fsSL https://pgp.mongodb.com/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-server-6.0.gpg
       args:
         creates: /usr/share/keyrings/mongodb-server-6.0.gpg
+      tags: mongodb
 
     - name: Add MongoDB repository
       ansible.builtin.apt_repository:
         repo: "deb [arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/6.0 multiverse"
         state: present
         filename: mongodb-org-6.0
+      tags: mongodb
 
     - name: Install MongoDB
       ansible.builtin.apt:
         name: mongodb-org
         state: present
         update_cache: yes
+      tags: mongodb
 
     - name: Enable and start MongoDB
       ansible.builtin.systemd:
