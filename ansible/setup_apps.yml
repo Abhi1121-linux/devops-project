@@ -46,13 +46,26 @@
         enabled: yes
         state: started
 
+    - name: Install MongoDB official APT repository
+      apt_repository:
+        repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/6.0 multiverse"
+        state: present
+      
+    - name: Add MongoDB GPG key
+      apt_key:
+        url: https://www.mongodb.org/static/pgp/server-6.0.asc
+        state: present
+
     - name: Install MongoDB
       apt:
-        name: mongodb
+        name: mongodb-org
         state: present
+        update_cache: yes
 
     - name: Enable and start MongoDB
       systemd:
-        name: mongodb
+        name: mongod
         enabled: yes
         state: started
+        enabled: yes
+      tags: mongodb
