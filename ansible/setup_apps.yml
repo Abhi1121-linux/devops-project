@@ -30,7 +30,7 @@
 
     - name: Preconfigure MySQL root password again (confirm)
       debconf:
-        naem: 'mysql-server'
+        name: 'mysql-server'
         question: 'mysql-server/root_password_again'
         value: "{{ mysql_root_password }}"
         vtype: 'password'
