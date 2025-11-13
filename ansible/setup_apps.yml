@@ -1,0 +1,58 @@
+- name: Setup DevOps environment
+  hosts: servers
+  become: yes
+  vars:
+    mysql_root_password: "abhi1121"
+
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Enable and start Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Preconfigure MySQL root password
+      debconf:
+        name: 'mysql-server'
+        question: 'mysql-server/root_password'
+        value: "{{ mysql_root_password }}"
+        vtype: 'password'
+
+    - name: Preconfigure MySQL root password again (confirm)
+      debconf:
+        naem: 'mysql-server'
+        question: 'mysql-server/root_password_again'
+        value: "{{ mysql_root_password }}"
+        vtype: 'password'
+
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: enabled and start MySQL service
+      systemd:
+        name: mysql
+        enabled: yes
+        state: started
+
+    - name: Install MongoDB
+      apt:
+        name: mongodb
+        state: present
+
+    - name: Enable and start MongoDB
+      systemd:
+        name: mongodb
+        enabled: yes
+        state: started
