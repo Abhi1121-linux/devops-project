@@ -35,7 +35,7 @@ pipeline {
         failure {
             echo '❌ Deployment failed!'
             emailext (
-                to: 'test112107@gmail.com'
+                to: 'test112107@gmail.com',
                 subject: "❌ Jenkins Build FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "Attention!\n\nThe Jenkins build '${env.JOB_NAME} #${env.BUILD_NUMBER}' has failed.\nCheck console output: ${env.BUILD_URL}",   
                                
